@@ -95,7 +95,7 @@ for month in months:
                     except:
                         print("issue with time")
 
-                    weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+                    weekdays = ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"]
 
                     for day in range(workday):
                         am_in = "7:00"
@@ -104,10 +104,11 @@ for month in months:
                         pm_in = "12:00"
                         pm_out = "4:00"
                         total = "8"
-                        if(workday>7):
+                        if(workday>6):
                             print("!!! CHECK HOURS FOR:", names[i], date, hours[i])
                         else:
                             destination_ws.append([weekdays[day], am_in, am_out, lunch, pm_in, pm_out, int(total)])
+                            destination_ws.append([""])
 
 
                     if (extra_time >= 8):
@@ -137,23 +138,29 @@ for month in months:
                         pm_in = ""
                         pm_out = ""
 
-                    if(extra_time != 0):
-                        if(workday>7):
+                    if (extra_time != 0):
+                        if (day <5):
+                            day +=1
+
+                        if (workday >= 6):
                             print("!!! CHECK HOURS FOR: ")
                         else:
                             destination_ws.append([weekdays[day], am_in, am_out, lunch, pm_in, pm_out, extra_time])
+                            destination_ws.append([""])
 
-                    for remaining_day in range(day+1, len(weekdays) ):
+
+                    for remaining_day in range(day+1, len(weekdays)):
                         am_in = ""
                         am_out = ""
                         lunch = ""
                         pm_in = ""
                         pm_out = ""
                         total = ""
-                        if(workday>7):
+                        if (workday > 6):
                             print("!!! CHECK HOURS FOR: ")
                         else:
                             destination_ws.append([weekdays[remaining_day], am_in, am_out, lunch, pm_in, pm_out, 0])
+                            destination_ws.append([""])
 
                     try:
 
