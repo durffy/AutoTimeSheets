@@ -90,7 +90,9 @@ for month in months:
                             destination_ws.append([weekdays[day], am_in, am_out, lunch, pm_in, pm_out, int(total)])
                             destination_ws.append([""])
 
-                    calculatedTime = ExtraTime(extra_time)
+                    CalculatedExtraTime = ExtraTime(extra_time)
+                    extraTimeEntry = CalculatedExtraTime.getTimeEntry()
+                    extraTimeList = []
 
                     if (extra_time != 0):
                         if (day <5):
@@ -99,7 +101,11 @@ for month in months:
                         if (workday >= 6):
                             print("!!! CHECK HOURS FOR: ")
                         else:
-                            destination_ws.append([weekdays[day], calculatedTime.time_entry.am_in, calculatedTime.time_entry.am_out, calculatedTime.time_entry.lunch, calculatedTime.time_entry.pm_in, calculatedTime.time_entry.pm_out, extra_time])
+                            extraTimeList.append(weekdays[day])
+                            for e in extraTimeEntry.getTimeList():
+                                extraTimeList.append(e)
+                            extraTimeList.append(extra_time)
+                            destination_ws.append(extraTimeList)
                             destination_ws.append([""])
 
 
