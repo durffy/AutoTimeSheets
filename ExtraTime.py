@@ -82,4 +82,5 @@ class ExtraTime:
             self.time_entry.setAmIn()
             self.time_entry.setAmOut("8" + self.calculateMinute())
 
+    def getTimeEntry(self):
         return self.time_entry
