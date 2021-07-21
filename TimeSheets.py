@@ -17,8 +17,20 @@ from TimeEntry import TimeEntry
             #auto generate time sheets in a single sheet
 
 
+def setTimeSheetHeader():
+    destination_ws.append(["Name", names[i]])
+    destination_ws.append(["Date", date])
+    destination_ws.append(["Day", "In", "Out", "Lunch", "In", "Out", "Total"])
+
 
 months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+
+def setDefaultTimes():
+    defaultTimeEntry = TimeEntry()
+    defaultTimeEntry.setDefaults()
+    return defaultTimeEntry
+
 
 for month in months:
 
@@ -62,32 +74,28 @@ for month in months:
                         if (cell.value != None):
                             hours.append(cell.value)
 
-
+            weekdays = ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"]
             for i in range(len(names)):
                 if(names[i].lower() != "TOTAL".lower()):
-                    destination_ws.append(["Name", names[i]])
-                    destination_ws.append(["Date", date])
-                    destination_ws.append(["Day", "In", "Out", "Lunch", "In", "Out", "Total"])
-
+                    setTimeSheetHeader()
                     try:
                         extra_time = float(hours[i] % 8)
                         workday = int((hours[i] - extra_time) / 8)
                     except:
                         print("issue with time")
 
-                    weekdays = ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"]
-
                     for day in range(workday):
-                        am_in = "7:00"
-                        am_out = "11:00"
-                        lunch = "1hr"
-                        pm_in = "12:00"
-                        pm_out = "4:00"
-                        total = "8"
+                        defaultTimes = setDefaultTimes()
+                        defaultTimeList = []
                         if(workday>6):
                             print("!!! CHECK HOURS FOR:", names[i], date, hours[i])
+
                         else:
-                            destination_ws.append([weekdays[day], am_in, am_out, lunch, pm_in, pm_out, int(total)])
+                            defaultTimeList.append(weekdays[day])
+                            for e in defaultTimes.getTimeList():
+                                defaultTimeList.append(e)
+                            defaultTimeList.append(8)
+                            destination_ws.append(defaultTimeList)
                             destination_ws.append([""])
 
                     CalculatedExtraTime = ExtraTime(extra_time)
@@ -123,9 +131,9 @@ for month in months:
                             destination_ws.append([""])
 
                     try:
-
                         destination_ws.append(["", "","","","","Total",hours[i]])
                         destination_ws.append([""])
+
                     except:
                         print("Hour len:", len(hours), "Iteration:", i)
                         print("Names len:", len(names))

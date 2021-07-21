@@ -38,3 +38,10 @@ class TimeEntry:
 
     def getTimeList(self):
         return self.am_in, self.am_out, self.lunch, self.pm_in, self.pm_out
+
+    def setDefaults(self):
+        self.setAmIn()
+        self.setAmOut()
+        self.setLunch()
+        self.setPmIn()
+        self.setPmOut()
