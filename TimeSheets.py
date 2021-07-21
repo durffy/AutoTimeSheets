@@ -17,14 +17,10 @@ from TimeEntry import TimeEntry
             #auto generate time sheets in a single sheet
 
 
-def setTimeSheetHeader():
-    destination_ws.append(["Name", names[i]])
+def setTimeSheetHeader(destination_ws, name, date):
+    destination_ws.append(["Name", name])
     destination_ws.append(["Date", date])
     destination_ws.append(["Day", "In", "Out", "Lunch", "In", "Out", "Total"])
-
-
-months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-
 
 def setDefaultTimes():
     defaultTimeEntry = TimeEntry()
@@ -32,23 +28,97 @@ def setDefaultTimes():
     return defaultTimeEntry
 
 
-for month in months:
+def parseNames(destination_ws, names, hours, date):
+    weekdays = ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"]
+    for i in range(len(names)):
+        #TODO create an object with the worksheet, name, hours, and date?
+        if (names[i].lower() != "TOTAL".lower()):
+            setTimeSheetHeader(destination_ws, names[i], date)
+            try:
+                extra_time = float(hours[i] % 8)
+                workday = int((hours[i] - extra_time) / 8)
+            except:
+                print("issue with time")
 
+            for day in range(workday):
+                defaultTimes = setDefaultTimes()
+                defaultTimeList = []
+                if (workday > 6):
+                    print("!!! CHECK HOURS FOR:", names[i], date, hours[i])
+
+                else:
+                    defaultTimeList.append(weekdays[day])
+                    for e in defaultTimes.getTimeList():
+                        defaultTimeList.append(e)
+                    defaultTimeList.append(8)
+                    destination_ws.append(defaultTimeList)
+                    destination_ws.append([""])
+
+            CalculatedExtraTime = ExtraTime(extra_time)
+            extraTimeEntry = CalculatedExtraTime.getTimeEntry()
+            extraTimeList = []
+
+            if (extra_time != 0):
+                if (day < 5):
+                    day += 1
+
+                if (workday >= 6):
+                    print("!!! CHECK HOURS FOR: ")
+                else:
+                    extraTimeList.append(weekdays[day])
+                    for e in extraTimeEntry.getTimeList():
+                        extraTimeList.append(e)
+                    extraTimeList.append(extra_time)
+                    destination_ws.append(extraTimeList)
+                    destination_ws.append([""])
+
+            for remaining_day in range(day + 1, len(weekdays)):
+                am_in = ""
+                am_out = ""
+                lunch = ""
+                pm_in = ""
+                pm_out = ""
+                total = ""
+                if (workday > 6):
+                    print("!!! CHECK HOURS FOR: ")
+                else:
+                    destination_ws.append([weekdays[remaining_day], am_in, am_out, lunch, pm_in, pm_out, 0])
+                    destination_ws.append([""])
+
+            try:
+                destination_ws.append(["", "", "", "", "", "Total", hours[i]])
+                destination_ws.append([""])
+
+            except:
+                print("Hour len:", len(hours), "Iteration:", i)
+                print("Names len:", len(names))
+                print("names", names)
+
+        elif (names[i].lower() == "TOTAL".lower()):
+            total_hours = 0
+            for i in range(len(hours) - 1):
+                total_hours += float(hours[i])
+            destination_ws.append(["", "", "", "", "", "Total", total_hours])
+
+
+
+
+def parseFiles(month):
     files = os.listdir("files/")
     for file_name in files:
 
-        path = "files/"+file_name
-        destination_file = str(month)+".xlsx"
+        path = "files/" + file_name
+        destination_file = str(month) + ".xlsx"
 
-        if(os.path.exists(destination_file)):
+        if (os.path.exists(destination_file)):
             destination_wb = openpyxl.load_workbook(destination_file)
         else:
             destination_wb = Workbook()
 
-        if(str(month) == file_name.split("-")[0]):
+        if (str(month) == file_name.split("-")[0]):
 
-            if(len(file_name) >= len("9-06-19 (1).xlsx")):
-                date = file_name[:len(file_name)-9]
+            if (len(file_name) >= len("9-06-19 (1).xlsx")):
+                date = file_name[:len(file_name) - 9]
             else:
                 date = file_name[:len(file_name) - 5]
             destination_ws = destination_wb.create_sheet(date)
@@ -67,83 +137,20 @@ for month in months:
 
             # all the values in row 5
             i = 5
-            while(len(hours)==0):
+            while (len(hours) == 0):
 
                 for row in source_ws.iter_rows(min_row=source_ws.max_row, max_row=source_ws.max_row):
                     for cell in row:
                         if (cell.value != None):
                             hours.append(cell.value)
 
-            weekdays = ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"]
-            for i in range(len(names)):
-                if(names[i].lower() != "TOTAL".lower()):
-                    setTimeSheetHeader()
-                    try:
-                        extra_time = float(hours[i] % 8)
-                        workday = int((hours[i] - extra_time) / 8)
-                    except:
-                        print("issue with time")
+            parseNames(destination_ws, names, hours, date)
+            destination_wb.save(filename=destination_file)
 
-                    for day in range(workday):
-                        defaultTimes = setDefaultTimes()
-                        defaultTimeList = []
-                        if(workday>6):
-                            print("!!! CHECK HOURS FOR:", names[i], date, hours[i])
+def main():
+    months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    for month in months:
+        parseFiles(month)
 
-                        else:
-                            defaultTimeList.append(weekdays[day])
-                            for e in defaultTimes.getTimeList():
-                                defaultTimeList.append(e)
-                            defaultTimeList.append(8)
-                            destination_ws.append(defaultTimeList)
-                            destination_ws.append([""])
-
-                    CalculatedExtraTime = ExtraTime(extra_time)
-                    extraTimeEntry = CalculatedExtraTime.getTimeEntry()
-                    extraTimeList = []
-
-                    if (extra_time != 0):
-                        if (day <5):
-                            day +=1
-
-                        if (workday >= 6):
-                            print("!!! CHECK HOURS FOR: ")
-                        else:
-                            extraTimeList.append(weekdays[day])
-                            for e in extraTimeEntry.getTimeList():
-                                extraTimeList.append(e)
-                            extraTimeList.append(extra_time)
-                            destination_ws.append(extraTimeList)
-                            destination_ws.append([""])
-
-
-                    for remaining_day in range(day+1, len(weekdays)):
-                        am_in = ""
-                        am_out = ""
-                        lunch = ""
-                        pm_in = ""
-                        pm_out = ""
-                        total = ""
-                        if (workday > 6):
-                            print("!!! CHECK HOURS FOR: ")
-                        else:
-                            destination_ws.append([weekdays[remaining_day], am_in, am_out, lunch, pm_in, pm_out, 0])
-                            destination_ws.append([""])
-
-                    try:
-                        destination_ws.append(["", "","","","","Total",hours[i]])
-                        destination_ws.append([""])
-
-                    except:
-                        print("Hour len:", len(hours), "Iteration:", i)
-                        print("Names len:", len(names))
-                        print("names", names)
-
-                elif(names[i].lower() == "TOTAL".lower()):
-                    total_hours = 0
-                    for i in range(len(hours) - 1):
-                        total_hours += float(hours[i])
-                    destination_ws.append(["", "", "", "", "", "Total", total_hours])
-
-
-            destination_wb.save(filename= destination_file)
+if __name__=="__main__":
+    main()
