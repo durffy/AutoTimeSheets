@@ -4,7 +4,7 @@ import openpyxl
 from openpyxl import Workbook
 from pathlib import Path
 
-from ExtraTime import ExtraTime
+from ExtraTimeEntry import ExtraTime
 from TimeEntry import TimeEntry
 
 #for each workbook in a month
@@ -28,10 +28,22 @@ def setDefaultTimes():
     return defaultTimeEntry
 
 
+def setTimeEntry(weekday,destination_ws, name, date, total):
+    defaultTimes = setDefaultTimes()
+    defaultTimeList = []
+
+    defaultTimeList.append(weekday)
+    for e in defaultTimes.getTimeList():
+        defaultTimeList.append(e)
+    defaultTimeList.append(total)
+    destination_ws.append(defaultTimeList)
+    destination_ws.append([""])
+
+
 def parseNames(destination_ws, names, hours, date):
     weekdays = ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"]
     for i in range(len(names)):
-        #TODO create an object with the worksheet, name, hours, and date?
+
         if (names[i].lower() != "TOTAL".lower()):
             setTimeSheetHeader(destination_ws, names[i], date)
             try:
@@ -41,18 +53,10 @@ def parseNames(destination_ws, names, hours, date):
                 print("issue with time")
 
             for day in range(workday):
-                defaultTimes = setDefaultTimes()
-                defaultTimeList = []
                 if (workday > 6):
                     print("!!! CHECK HOURS FOR:", names[i], date, hours[i])
-
                 else:
-                    defaultTimeList.append(weekdays[day])
-                    for e in defaultTimes.getTimeList():
-                        defaultTimeList.append(e)
-                    defaultTimeList.append(8)
-                    destination_ws.append(defaultTimeList)
-                    destination_ws.append([""])
+                    setTimeEntry(weekdays[day], destination_ws, names[i], date, total=8)
 
             CalculatedExtraTime = ExtraTime(extra_time)
             extraTimeEntry = CalculatedExtraTime.getTimeEntry()
@@ -61,7 +65,6 @@ def parseNames(destination_ws, names, hours, date):
             if (extra_time != 0):
                 if (day < 5):
                     day += 1
-
                 if (workday >= 6):
                     print("!!! CHECK HOURS FOR: ")
                 else:
@@ -72,23 +75,16 @@ def parseNames(destination_ws, names, hours, date):
                     destination_ws.append(extraTimeList)
                     destination_ws.append([""])
 
+            # fill out remaining days left in the workweek as zero days on timesheet
             for remaining_day in range(day + 1, len(weekdays)):
-                am_in = ""
-                am_out = ""
-                lunch = ""
-                pm_in = ""
-                pm_out = ""
-                total = ""
                 if (workday > 6):
-                    print("!!! CHECK HOURS FOR: ")
+                    print("!!! CHECK HOURS FOR:", names[i], date, hours[i])
                 else:
-                    destination_ws.append([weekdays[remaining_day], am_in, am_out, lunch, pm_in, pm_out, 0])
-                    destination_ws.append([""])
+                    setTimeEntry(weekdays[remaining_day], destination_ws, names[i], date, total="")
 
             try:
                 destination_ws.append(["", "", "", "", "", "Total", hours[i]])
                 destination_ws.append([""])
-
             except:
                 print("Hour len:", len(hours), "Iteration:", i)
                 print("Names len:", len(names))
@@ -97,7 +93,8 @@ def parseNames(destination_ws, names, hours, date):
         elif (names[i].lower() == "TOTAL".lower()):
             total_hours = 0
             for i in range(len(hours) - 1):
-                total_hours += float(hours[i])
+                if(isinstance(hours[i], float) or isinstance(hours[i],int)):
+                    total_hours += float(hours[i])
             destination_ws.append(["", "", "", "", "", "Total", total_hours])
 
 
