@@ -1,4 +1,4 @@
-from TimeEntry import TimeEntry
+from Util.TimeEntry import TimeEntry
 
 class ExtraTime:
 
