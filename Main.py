@@ -4,24 +4,14 @@ import openpyxl
 from openpyxl import Workbook
 from pathlib import Path
 
-from Util.TimeSheet import FortyHourTimeSheet
-
-#for each workbook in a month
-    #create a new workbook
-    #for each pay period
-        # create a new worksheet
-        #for each employee
-            #get the time worked
-            #calculate time left over from 8 hour shifts
-            #auto generate time sheets in a single sheet
-
-
+from Util.TimeSheet import TimeSheet
 
 
 def parseNames(destination_ws, names, hours, date):
     weekdays = ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"]
     for i in range(len(names)):
-            FortyHourTimeSheet(destination_ws, names[i], date, hours[i])
+        if(names[i].lower()!= "TOTAL".lower()):
+            TimeSheet(destination_ws, names[i], date, hours[i])
 
 
 def parseFiles(month):

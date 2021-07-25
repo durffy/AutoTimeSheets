@@ -33,6 +33,7 @@ class ExtraTime:
 
 
     def calculateHour(self):
+
         if (self.extra_time >= 8):
             self.time_entry.setAmIn()
             self.time_entry.setAmOut()
@@ -77,10 +78,13 @@ class ExtraTime:
             "10" + self.calculateMinute()
             self.time_entry.setAmOut("9" + self.calculateMinute())
 
-
         elif (self.extra_time >= 1):
             self.time_entry.setAmIn()
             self.time_entry.setAmOut("8" + self.calculateMinute())
+
+        elif (self.extra_time >= 1):
+            self.time_entry.setAmIn()
+            self.time_entry.setAmOut("7" + self.calculateMinute())
 
     def getTimeEntry(self):
         return self.time_entry
