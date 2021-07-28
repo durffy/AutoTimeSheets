@@ -33,8 +33,37 @@ class ExtraTime:
 
 
     def calculateHour(self):
-
-        if (self.extra_time >= 8):
+        if (self.extra_time >= 13):
+            self.time_entry.setAmIn("4:30")
+            self.time_entry.setAmOut()
+            self.time_entry.setLunch("1.5hr")
+            self.time_entry.setPmIn()
+            self.time_entry.setPmOut("7"+self.calculateMinute())
+        elif (self.extra_time >= 12):
+            self.time_entry.setAmIn("6:00")
+            self.time_entry.setAmOut()
+            self.time_entry.setLunch()
+            self.time_entry.setPmIn()
+            self.time_entry.setPmOut("7"+self.calculateMinute())
+        elif (self.extra_time >= 11):
+            self.time_entry.setAmIn("6:00")
+            self.time_entry.setAmOut()
+            self.time_entry.setLunch()
+            self.time_entry.setPmIn()
+            self.time_entry.setPmOut("6"+self.calculateMinute())
+        elif (self.extra_time >= 10):
+            self.time_entry.setAmIn("6:00")
+            self.time_entry.setAmOut()
+            self.time_entry.setLunch()
+            self.time_entry.setPmIn()
+            self.time_entry.setPmOut("5"+self.calculateMinute())
+        elif (self.extra_time >= 9):
+            self.time_entry.setAmIn()
+            self.time_entry.setAmOut()
+            self.time_entry.setLunch()
+            self.time_entry.setPmIn()
+            self.time_entry.setPmOut("5"+self.calculateMinute())
+        elif (self.extra_time >= 8):
             self.time_entry.setAmIn()
             self.time_entry.setAmOut()
             self.time_entry.setLunch()
