@@ -115,7 +115,7 @@ class ExtraTime:
             self.time_entry.setAmIn()
             self.time_entry.setAmOut("8" + self.calculateMinute())
 
-        elif (self.extra_time >= 1):
+        elif (self.extra_time > 0):
             self.time_entry.setAmIn()
             self.time_entry.setAmOut("7" + self.calculateMinute())
 
