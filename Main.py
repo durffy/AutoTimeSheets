@@ -7,11 +7,15 @@ from pathlib import Path
 from Util.TimeSheet import TimeSheet
 
 
+
 def parseNames(destination_ws, names, hours, date):
     weekdays = ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"]
+    total_hours = 0
     for i in range(len(names)):
         if(names[i].lower()!= "TOTAL".lower()):
             TimeSheet(destination_ws, names[i], date, hours[i])
+            total_hours += hours[i]
+    destination_ws.append(["","","","","","TOTAL", total_hours])
 
 
 def parseFiles(month):
