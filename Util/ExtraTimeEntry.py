@@ -8,7 +8,11 @@ class ExtraTime:
         self.calculateHour()
 
     def calculateMinute(self):
-        ones_decimal_place = str(self.extra_time).split('.')[1][0]
+
+        try:
+            ones_decimal_place = str(self.extra_time).split('.')[1][0]
+        except:
+            return ":00"
 
         if (ones_decimal_place == "1"):
             return ":10"
